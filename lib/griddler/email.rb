@@ -104,6 +104,15 @@ module Griddler
       @autoreply
     end
 
+    def to_yaml(opts = {})
+      params.to_yaml(opts)
+    end
+
+    def self.from_yaml(str)
+      _params = YAML.load(str)
+      self.new(_params).process
+    end
+
     private
 
     attr_reader :params

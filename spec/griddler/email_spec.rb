@@ -420,6 +420,40 @@ describe Griddler::Email, 'multipart emails' do
   end
 end
 
+describe Griddler::Email, 'serialization' do
+  it 'serializes to yaml' do
+    email = email_with_params(
+      html: '<b>hello there</b>',
+      text: 'hello there'
+    )
+
+    email.to_yaml.should == email.send(:params).to_yaml
+  end
+
+  it 'marshals from yaml' do
+    params = {
+      to: ['hi@example.com'],
+      from: 'bye@example.com',
+      html: '<b>hello there</b>',
+      text: 'hello there'
+    }
+
+    yaml = params.to_yaml
+    email = Griddler::Email.from_yaml(yaml)
+    email.to.first[:original_email].should eq params[:to].first
+    email.raw_text.should eq params[:text]
+  end
+
+  def email_with_params(params)
+    params = {
+      to: ['hi@example.com'],
+      from: 'bye@example.com'
+    }.merge(params)
+
+    Griddler::Email.new(params).process
+  end
+end
+
 describe Griddler::Email, 'extracting email headers' do
   it 'extracts header names and values as a hash' do
     header_name = 'Arbitrary-Header'
