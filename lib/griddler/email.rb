@@ -110,7 +110,7 @@ module Griddler
 
     def self.from_yaml(str)
       _params = YAML.load(str)
-      self.new(_params).process
+      self.new(_params)
     end
 
     private
