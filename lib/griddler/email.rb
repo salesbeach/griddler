@@ -105,7 +105,10 @@ module Griddler
     end
 
     def to_yaml(opts = {})
-      params.to_yaml(opts)
+      yaml_obj = params.dup
+      yaml_obj.delete('attachments') if yaml_obj['attachments']
+      yaml_obj['headers'].delete('attachments') if yaml_obj['headers'] && yaml_obj['headers']['attachments']
+      yaml_obj.to_yaml(opts)
     end
 
     def self.from_yaml(str)
