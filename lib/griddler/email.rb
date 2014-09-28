@@ -10,7 +10,8 @@ module Griddler
                 :headers, :raw_headers, :attachments, :cc, :bcc, :signature
 
     def initialize(params)
-      @params = params
+      cleaned_params = Hash[params.collect{|k,v| [k, (v.is_a?(String) ? clean_text(v) : v)] }]
+      @params = cleaned_params
 
       @to = recipients
       @cc = parse_ccs
@@ -160,17 +161,17 @@ module Griddler
     end
 
     def extract_text
-      return clean_text(params[:stripped_text]) if params.key?(:stripped_text)
+      return clean_text(params[:stripped_text]) if params[:stripped_text].present?
       EmailParser.extract_reply_body(clean_text(params[:text].to_s))
     end
 
     def extract_html
-      return clean_html(params[:stripped_html]) if params.key?(:stripped_html)
+      return clean_html(params[:stripped_html]) if params[:stripped_html].present?
       EmailParser.extract_reply_body(clean_html(params[:html].to_s))
     end
 
     def extract_body_html
-      cleaned = params[:stripped_html] if params.key?(:stripped_html)
+      cleaned = params[:stripped_html] if params[:stripped_html].present?
       cleaned ||= extract_html
       return nil if cleaned.nil? || cleaned == "" || params[:html].nil?
       html = clean_invalid_utf8_bytes(params[:html]).encode('UTF-8')
@@ -180,7 +181,7 @@ module Griddler
     end
 
     def extract_signature
-      return clean_html(params[:stripped_signature]) if params.key?(:stripped_signature)
+      return clean_html(params[:stripped_signature]) if params[:stripped_signature].present?
       EmailParser.extract_replies(clean_html(text_or_sanitized_html))
     end
 
@@ -189,17 +190,17 @@ module Griddler
     end
 
     def stripped_text_or_html
-      if params.key? :stripped_text
+      if params[:stripped_text].present?
         clean_text(params[:stripped_text])
-      elsif params.key? :stripped_html
+      elsif params[:stripped_html].present?
         clean_html(params[:stripped_html])
       end
     end
 
     def text_or_sanitized_html
-      if params.key? :text
+      if params[:text].present?
         clean_text(params[:text])
-      elsif params.key? :html
+      elsif params[:html].present?
         clean_html(params[:html])
       end
     end

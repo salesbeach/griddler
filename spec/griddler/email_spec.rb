@@ -372,6 +372,22 @@ describe Griddler::Email, 'multipart emails' do
     email.body_text.should eq 'Hello there'
   end
 
+  it 'uses html for body if text is empty' do
+    body = <<-EOF
+      <p>Hello.</p><span>Reply ABOVE THIS LINE</span><p>original message</p>
+    EOF
+
+    email = email_with_params(
+      to: ['hi@example.com'],
+      from: 'bye@example.com',
+      html: body,
+      text: '',
+      stripped_html: '',
+      stripped_text: ''
+    )
+    email.body.should eq 'Hello.'
+  end
+
   it 'allows access to signature / replies block' do
     html_body = <<-EOF
       <blink>hello there</blink>
