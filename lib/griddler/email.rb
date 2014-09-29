@@ -9,9 +9,9 @@ module Griddler
                 :raw_body, :raw_text, :raw_html, :raw_body_html,
                 :headers, :raw_headers, :attachments, :cc, :bcc, :signature
 
-    def initialize(params)
-      cleaned_params = Hash[params.collect{|k,v| [k, (v.is_a?(String) ? clean_text(v) : v)] }]
-      @params = cleaned_params
+    def initialize(raw_params)
+      cleaned_params = Hash[raw_params.collect{|k,v| [k, (v.is_a?(String) ? clean_text(v) : v)] }]
+      @params = cleaned_params.with_indifferent_access
 
       @to = recipients
       @cc = parse_ccs

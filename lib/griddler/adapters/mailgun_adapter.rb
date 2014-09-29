@@ -6,7 +6,7 @@ module Griddler
       end
 
       def self.normalize_params(params)
-        adapter = new(params)
+        adapter = new(params.with_indifferent_access)
         adapter.normalize_params
       end
 
@@ -40,7 +40,10 @@ module Griddler
       end
 
       def recipients
-        (params['To'] || params[:recipient]).to_s.split(',')
+        _recipients = params[:To]
+        _recipients = params[:to] unless _recipients.present?
+        _recipients = params[:recipient] unless _recipients.present?
+        _recipients.to_s.split(',')
       end
 
       def cc

@@ -331,6 +331,16 @@ describe Griddler::Email, 'multipart emails' do
       text: 'hello there'
     )
     email.raw_body.should eq 'hello there'
+    email.body.should eq 'hello there'
+  end
+
+  it 'accepts string as well as symbol parameters' do
+    email = email_with_params(
+      'html' => '<b>hello there</b>',
+      'text' => 'hello there'
+    )
+    email.raw_body.should eq 'hello there'
+    email.body.should eq 'hello there'
   end
 
   it 'uses text as raw_body' do
